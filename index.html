@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <title>Network Information</title>
@@ -48,7 +49,7 @@ margin:6px;
 <h2>Network Information</h2>
 
 <p><b>IP:</b> <span id="ip">Loading...</span></p>
-<p><b>Country:</b> <span id="country"></span> <span id="flag"></span></p>
+<p><b>Country:</b> <span id="country"></span></p>
 <p><b>City:</b> <span id="city"></span></p>
 <p><b>Internet Provider:</b> <span id="isp"></span></p>
 
@@ -70,27 +71,6 @@ margin:6px;
 
 <script>
 
-/* -------- IP INFORMATION -------- */
-
-fetch("https://ipapi.co/json/")
-.then(response => response.json())
-.then(data => {
-
-document.getElementById("ip").innerText = data.ip
-document.getElementById("country").innerText = data.country_name
-document.getElementById("city").innerText = data.city
-document.getElementById("isp").innerText = data.org
-
-// flag
-document.getElementById("flag").innerText = getFlagEmoji(data.country_code)
-
-})
-
-function getFlagEmoji(code){
-return String.fromCodePoint(...[...code.toUpperCase()].map(c => 127397 + c.charCodeAt()))
-}
-
-
 /* -------- DATE TIME -------- */
 
 var now = new Date()
@@ -102,9 +82,7 @@ document.getElementById("time").innerText = now.toLocaleTimeString()
 /* -------- DEVICE -------- */
 
 var ua = navigator.userAgent
-
 var device = /mobile/i.test(ua) ? "Mobile" : "Computer"
-
 document.getElementById("device").innerText = device
 
 
@@ -119,7 +97,7 @@ else if(ua.includes("Safari")) browser="Safari"
 document.getElementById("browser").innerText = browser
 
 
-/* -------- OPERATING SYSTEM -------- */
+/* -------- OS -------- */
 
 var os="Unknown"
 
@@ -131,7 +109,20 @@ else if(ua.includes("Mac")) os="MacOS"
 document.getElementById("os").innerText = os
 
 
-/* -------- GPS MAP -------- */
+/* -------- GET IP INFO -------- */
+
+fetch("https://ipapi.co/json/")
+.then(res => res.json())
+.then(data => {
+
+document.getElementById("ip").innerText = data.ip
+document.getElementById("country").innerText = data.country_name
+document.getElementById("isp").innerText = data.org
+
+})
+
+
+/* -------- GPS LOCATION -------- */
 
 if(navigator.geolocation){
 
@@ -142,6 +133,26 @@ var lon = position.coords.longitude
 
 document.getElementById("lat").innerText = lat
 document.getElementById("lon").innerText = lon
+
+
+/* reverse geocoding หาเมืองจริง */
+
+fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+.then(res=>res.json())
+.then(location=>{
+
+var city =
+location.address.city ||
+location.address.town ||
+location.address.village ||
+location.address.state
+
+document.getElementById("city").innerText = city
+
+})
+
+
+/* -------- MAP -------- */
 
 var map = L.map('map').setView([lat, lon], 13)
 
@@ -155,13 +166,10 @@ L.marker([lat, lon]).addTo(map)
 
 })
 
-}else{
-
-document.getElementById("map").innerHTML="GPS not supported"
-
 }
 
 </script>
 
 </body>
+
 </html>
