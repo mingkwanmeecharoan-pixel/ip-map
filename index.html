@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
-
 <head>
+
 <title>Network Information</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -38,6 +38,7 @@ margin:6px;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -69,85 +70,78 @@ margin:6px;
 
 <script>
 
-// ---------------- IP INFO ----------------
+/* -------- IP INFORMATION -------- */
 
 fetch("https://ipapi.co/json/")
-.then(res => res.json())
+.then(response => response.json())
 .then(data => {
 
-document.getElementById("ip").innerHTML = data.ip
-document.getElementById("country").innerHTML = data.country_name
-document.getElementById("city").innerHTML = data.city
-document.getElementById("isp").innerHTML = data.org
+document.getElementById("ip").innerText = data.ip
+document.getElementById("country").innerText = data.country_name
+document.getElementById("city").innerText = data.city
+document.getElementById("isp").innerText = data.org
 
-// country flag
-document.getElementById("flag").innerHTML =
-"🇨🇴".replace("🇨🇴", getFlagEmoji(data.country_code))
+// flag
+document.getElementById("flag").innerText = getFlagEmoji(data.country_code)
 
 })
 
-function getFlagEmoji(countryCode){
-return String.fromCodePoint(...[...countryCode.toUpperCase()].map(c => 127397 + c.charCodeAt()))
+function getFlagEmoji(code){
+return String.fromCodePoint(...[...code.toUpperCase()].map(c => 127397 + c.charCodeAt()))
 }
 
-// ---------------- DATE TIME ----------------
+
+/* -------- DATE TIME -------- */
 
 var now = new Date()
 
-document.getElementById("date").innerHTML = now.toLocaleDateString()
-document.getElementById("time").innerHTML = now.toLocaleTimeString()
+document.getElementById("date").innerText = now.toLocaleDateString()
+document.getElementById("time").innerText = now.toLocaleTimeString()
 
-// ---------------- DEVICE ----------------
+
+/* -------- DEVICE -------- */
 
 var ua = navigator.userAgent
 
-if(/mobile/i.test(ua)){
-device="Mobile"
-}else{
-device="Computer"
-}
+var device = /mobile/i.test(ua) ? "Mobile" : "Computer"
 
-document.getElementById("device").innerHTML = device
+document.getElementById("device").innerText = device
 
-// ---------------- BROWSER ----------------
 
-if(ua.indexOf("Chrome")>-1){
-browser="Chrome"
-}else if(ua.indexOf("Firefox")>-1){
-browser="Firefox"
-}else if(ua.indexOf("Safari")>-1){
-browser="Safari"
-}else{
-browser="Unknown"
-}
+/* -------- BROWSER -------- */
 
-document.getElementById("browser").innerHTML = browser
+var browser="Unknown"
 
-// ---------------- OS ----------------
+if(ua.includes("Chrome")) browser="Chrome"
+else if(ua.includes("Firefox")) browser="Firefox"
+else if(ua.includes("Safari")) browser="Safari"
 
-if(ua.indexOf("Windows")>-1){
-os="Windows"
-}else if(ua.indexOf("Android")>-1){
-os="Android"
-}else if(ua.indexOf("iPhone")>-1){
-os="iOS"
-}else if(ua.indexOf("Mac")>-1){
-os="MacOS"
-}else{
-os="Unknown"
-}
+document.getElementById("browser").innerText = browser
 
-document.getElementById("os").innerHTML = os
 
-// ---------------- GPS MAP ----------------
+/* -------- OPERATING SYSTEM -------- */
+
+var os="Unknown"
+
+if(ua.includes("Windows")) os="Windows"
+else if(ua.includes("Android")) os="Android"
+else if(ua.includes("iPhone")) os="iOS"
+else if(ua.includes("Mac")) os="MacOS"
+
+document.getElementById("os").innerText = os
+
+
+/* -------- GPS MAP -------- */
+
+if(navigator.geolocation){
 
 navigator.geolocation.getCurrentPosition(function(position){
 
 var lat = position.coords.latitude
 var lon = position.coords.longitude
 
-document.getElementById("lat").innerHTML = lat
-document.getElementById("lon").innerHTML = lon
+document.getElementById("lat").innerText = lat
+document.getElementById("lon").innerText = lon
 
 var map = L.map('map').setView([lat, lon], 13)
 
@@ -161,8 +155,13 @@ L.marker([lat, lon]).addTo(map)
 
 })
 
+}else{
+
+document.getElementById("map").innerHTML="GPS not supported"
+
+}
+
 </script>
 
 </body>
-
 </html>
