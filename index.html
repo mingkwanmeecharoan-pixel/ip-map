@@ -1,15 +1,27 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 <title>IP Location Map</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 <style>
+
 body{
 font-family: Arial;
 text-align:center;
 background:#f2f2f2;
+}
+
+.box{
+background:white;
+width:350px;
+margin:auto;
+margin-top:30px;
+padding:20px;
+border-radius:10px;
+box-shadow:0 0 10px gray;
 }
 
 #map{
@@ -20,15 +32,6 @@ margin-top:20px;
 border-radius:10px;
 }
 
-.box{
-background:white;
-padding:20px;
-width:350px;
-margin:auto;
-margin-top:40px;
-border-radius:10px;
-box-shadow:0 0 10px gray;
-}
 </style>
 </head>
 
@@ -36,11 +39,11 @@ box-shadow:0 0 10px gray;
 
 <div class="box">
 
-<h2>ข้อมูลตำแหน่งของคุณ</h2>
+<h2>ข้อมูลการเชื่อมต่อ</h2>
 
-<p><b>IP:</b> <span id="ip"></span></p>
-<p><b>ประเทศ:</b> <span id="country"></span></p>
-<p><b>เมือง:</b> <span id="city"></span></p>
+<p><b>IP:</b> <span id="ip">กำลังโหลด...</span></p>
+<p><b>ประเทศ:</b> <span id="country">กำลังโหลด...</span></p>
+<p><b>เมือง:</b> <span id="city">กำลังโหลด...</span></p>
 
 </div>
 
@@ -50,6 +53,7 @@ box-shadow:0 0 10px gray;
 
 <script>
 
+// ดึงข้อมูล IP
 fetch("https://ipapi.co/json/")
 .then(response => response.json())
 .then(data => {
@@ -58,17 +62,23 @@ document.getElementById("ip").innerHTML = data.ip
 document.getElementById("country").innerHTML = data.country_name
 document.getElementById("city").innerHTML = data.city
 
-var lat = data.latitude
-var lon = data.longitude
+})
 
-var map = L.map('map').setView([lat, lon], 10)
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-maxZoom: 19
+// ใช้ GPS หา location จริง
+navigator.geolocation.getCurrentPosition(function(position){
+
+var lat = position.coords.latitude
+var lon = position.coords.longitude
+
+var map = L.map('map').setView([lat, lon], 13)
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+maxZoom:19
 }).addTo(map)
 
 L.marker([lat, lon]).addTo(map)
-.bindPopup("ตำแหน่งโดยประมาณของคุณ")
+.bindPopup("ตำแหน่งของคุณ")
 .openPopup()
 
 })
@@ -76,4 +86,5 @@ L.marker([lat, lon]).addTo(map)
 </script>
 
 </body>
+
 </html>
